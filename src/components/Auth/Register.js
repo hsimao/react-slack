@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
 import firebase from '../../firebase'
 import { Link } from 'react-router-dom'
-import { Grid, Form, Segment, Button, Header, Message } from 'semantic-ui-react'
+import {
+  Grid,
+  Form,
+  Segment,
+  Button,
+  Header,
+  Message,
+  Icon
+} from 'semantic-ui-react'
+import md5 from 'md5'
 
 import style from './Register.module.scss'
 
@@ -87,6 +96,7 @@ class Register extends Component {
   displayErrors = errors =>
     errors.map((error, i) => <p key={i}>{error.message}</p>)
 
+  // email password 註冊
   handleSubmit = event => {
     event.preventDefault()
     if (this.isFormValid()) {
@@ -96,8 +106,30 @@ class Register extends Component {
         .auth()
         .createUserWithEmailAndPassword(this.state.email, this.state.password)
         .then(createdUser => {
-          console.log(createdUser)
-          this.setState({ loading: false })
+          // 將 user 名字、照片儲存到 firebase user 的 profile 內
+          createdUser.user
+            .updateProfile({
+              displayName: this.state.username,
+              // 用 email 使用 gravatar 亂數產生大頭貼網址
+              photoURL: `http://gravatar.com/avatar/${md5(
+                createdUser.user.email
+              )}?d=identicon`
+            })
+            .then(() => {
+              console.log(createdUser)
+              // 將 user 註冊資料儲存到 database
+              this.saveUser(createdUser).then(() => {
+                console.log('用戶資料儲存完成')
+              })
+              this.setState({ loading: false })
+            })
+            .catch(err => {
+              console.error(err)
+              this.setState({
+                errors: this.state.errors.concat(err),
+                loading: false
+              })
+            })
         })
         .catch(err => {
           console.error(err)
@@ -110,6 +142,43 @@ class Register extends Component {
           })
         })
     }
+  }
+
+  // 社群帳號註冊
+  registerWithSocial = type => {
+    console.log('login')
+    let provider = null
+    if (type === 'gmail') provider = new firebase.auth.GoogleAuthProvider()
+    if (type === 'fb') provider = new firebase.auth.FacebookAuthProvider()
+    firebase.auth().languageCode = 'zh-Hant-TW'
+
+    firebase
+      .auth()
+      .signInWithPopup(provider)
+      .then(createdUser => {
+        // 將 user 註冊資料儲存到 database
+        this.saveUser(createdUser).then(() => {
+          console.log(createdUser)
+          console.log('用戶資料儲存完成')
+        })
+        this.setState({ loading: false })
+      })
+      .catch(err => {
+        console.error(err)
+        this.setState({
+          errors: this.state.errors.concat(err),
+          loading: false
+        })
+      })
+  }
+
+  // 儲存用戶資料到 database
+  saveUser = createdUser => {
+    const userRef = firebase.database().ref('users')
+    return userRef.child(createdUser.user.uid).set({
+      name: createdUser.user.displayName,
+      avatar: createdUser.user.photoURL
+    })
   }
 
   handleInputError = (errors, inputName) => {
@@ -140,11 +209,11 @@ class Register extends Component {
     return (
       <Grid textAlign="center" verticalAlign="middle" className="content">
         <Grid.Column style={{ maxWidth: 450 }}>
-          <Header as="h2" color="orange" textAlign="center">
-            <div className={style['logo-box']}>
+          <Header as="h1" color="teal" textAlign="center">
+            <div className={style.logo_box}>
               <Logo />
             </div>
-            註冊開始聊天
+            註冊
           </Header>
           <Form size="large" onSubmit={this.handleSubmit}>
             <Segment stacked>
@@ -199,12 +268,29 @@ class Register extends Component {
               <Button
                 disabled={loading}
                 className={loading ? 'loading' : ''}
-                color="orange"
+                color="teal"
                 fluid
                 size="large"
               >
                 註冊
               </Button>
+
+              <div className={style.social_group}>
+                <Icon
+                  onClick={() => this.registerWithSocial('fb')}
+                  name="facebook official"
+                  link
+                  color="blue"
+                  size="big"
+                />
+                <Icon
+                  onClick={() => this.registerWithSocial('gmail')}
+                  name="google"
+                  link
+                  color="red"
+                  size="big"
+                />
+              </div>
             </Segment>
           </Form>
 

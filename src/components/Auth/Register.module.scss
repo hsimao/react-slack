@@ -1,6 +1,16 @@
-.logo-box {
+.logo_box {
   margin: 30px auto;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.social_group {
+  margin: 15px 0 5px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  i + i {
+    margin-left: 5px;
+  }
 }
