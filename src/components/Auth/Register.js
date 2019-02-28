@@ -144,8 +144,8 @@ class Register extends Component {
     }
   }
 
-  // 社群帳號註冊
-  registerWithSocial = type => {
+  // 社群帳號登入
+  signInWithSocial = type => {
     console.log('login')
     let provider = null
     if (type === 'gmail') provider = new firebase.auth.GoogleAuthProvider()
@@ -182,11 +182,6 @@ class Register extends Component {
   }
 
   handleInputError = (errors, inputName) => {
-    errors.map(error => {
-      console.log(inputName)
-      console.log(error.code === inputName)
-    })
-
     return errors.some(error => {
       if (error.code) {
         return error.code.toLowerCase().includes(inputName)
@@ -277,14 +272,14 @@ class Register extends Component {
 
               <div className={style.social_group}>
                 <Icon
-                  onClick={() => this.registerWithSocial('fb')}
+                  onClick={() => this.signInWithSocial('fb')}
                   name="facebook official"
                   link
                   color="blue"
                   size="big"
                 />
                 <Icon
-                  onClick={() => this.registerWithSocial('gmail')}
+                  onClick={() => this.signInWithSocial('gmail')}
                   name="google"
                   link
                   color="red"
