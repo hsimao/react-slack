@@ -23,7 +23,7 @@ import { createStore } from 'redux'
 import { Provider, connect } from 'react-redux'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import rootReducer from './reducers'
-import { setUser } from './actions'
+import { setUser, clearUser } from './actions'
 const store = createStore(rootReducer, composeWithDevTools())
 
 // router 設置
@@ -32,10 +32,12 @@ class Root extends Component {
     // 監聽 onAuthStateChanged, 如果有取得 user 資料就引導到首頁
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        console.log('user', user)
         // 將 user 資料儲存到 redux
         this.props.setUser(user)
         this.props.history.push('/')
+      } else {
+        this.props.history.push('/login')
+        this.props.clearUser()
       }
     })
   }
@@ -61,7 +63,7 @@ const mapStateFromProps = state => ({
 const RootWithAuth = withRouter(
   connect(
     mapStateFromProps,
-    { setUser }
+    { setUser, clearUser }
   )(Root)
 )
 
