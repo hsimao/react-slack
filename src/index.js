@@ -12,6 +12,7 @@ import * as serviceWorker from './serviceWorker'
 import Register from './components/Auth/Register'
 import App from './components/App'
 import Login from './components/Auth/Login'
+import Spinner from './Spinner'
 
 import firebase from './firebase'
 
@@ -40,7 +41,9 @@ class Root extends Component {
   }
 
   render() {
-    return (
+    return this.props.isLoading ? (
+      <Spinner />
+    ) : (
       <Switch>
         <Route exact path="/" component={App} />
         <Route path="/login" component={Login} />
@@ -50,10 +53,14 @@ class Root extends Component {
   }
 }
 
+const mapStateFromProps = state => ({
+  isLoading: state.user.isLoading
+})
+
 // router 連結 redux
 const RootWithAuth = withRouter(
   connect(
-    null,
+    mapStateFromProps,
     { setUser }
   )(Root)
 )
