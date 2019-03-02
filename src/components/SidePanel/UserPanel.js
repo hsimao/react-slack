@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import firebase from '../../firebase'
-import { Grid, Header, Icon, Dropdown } from 'semantic-ui-react'
+import { Grid, Header, Icon, Dropdown, Image } from 'semantic-ui-react'
 
 class UserPanel extends Component {
   state = {
@@ -32,6 +32,7 @@ class UserPanel extends Component {
   }
 
   render() {
+    const { user } = this.state
     return (
       <Grid style={{ background: '#611f69' }}>
         <Grid.Column>
@@ -41,15 +42,19 @@ class UserPanel extends Component {
               <Icon name="code" />
               <Header.Content>SlackChat</Header.Content>
             </Header>
+            {/* User 下拉列表 */}
+            <Header style={{ padding: '0.25rem' }} as="h4" inverted>
+              <Dropdown
+                trigger={
+                  <span>
+                    <Image src={user.photoURL} spaced="right" avatar />
+                    {user.displayName}
+                  </span>
+                }
+                options={this.dropdownOptions()}
+              />
+            </Header>{' '}
           </Grid.Row>
-
-          {/* User 下拉列表 */}
-          <Header style={{ padding: '0.25rem' }} as="h4" inverted>
-            <Dropdown
-              trigger={<span>{this.state.user.displayName}</span>}
-              options={this.dropdownOptions()}
-            />
-          </Header>
         </Grid.Column>
       </Grid>
     )
