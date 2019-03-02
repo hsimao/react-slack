@@ -1,0 +1,26 @@
+body {
+  height: 100vh !important;
+  background-color: #eee !important;
+}
+
+// messages.js
+.messages {
+  // height: 440px;
+  height: calc(100vh - 280px);
+  overflow-y: scroll;
+}
+
+.message__self {
+  border-left: 2px solid orange;
+  padding-left: 8px;
+}
+
+// messagesForm.js
+.message__form {
+  position: fixed !important;
+  margin-left: 320px !important;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 200;
+}

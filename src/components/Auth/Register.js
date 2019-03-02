@@ -185,6 +185,8 @@ class Register extends Component {
     return errors.some(error => {
       if (error.code) {
         return error.code.toLowerCase().includes(inputName)
+      } else {
+        return false
       }
     })
       ? 'error'
