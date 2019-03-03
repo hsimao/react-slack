@@ -127,20 +127,20 @@ class Channels extends Component {
     const { channels, modal } = this.state
     return (
       <React.Fragment>
-        <Menu.Menu style={{ paddingBottom: '2rem' }}>
+        <Menu.Menu className="menu">
           <Menu.Item>
             <span>
-              <Icon name="exchange" /> 對話群組
+              <Icon name="exchange" /> 群組
             </span>{' '}
             ({channels.length}) <Icon name="add" onClick={this.openModal} />
           </Menu.Item>
-          {/* 對話窗列表 */}
+          {/* 群組列表 */}
           {this.displayChannels(channels)}
         </Menu.Menu>
 
-        {/*  新增對話窗 modal */}
+        {/*  新增群組 modal */}
         <Modal basic open={modal} onClose={this.closeModal}>
-          <Modal.Header>新增對話群組</Modal.Header>
+          <Modal.Header>新增群組</Modal.Header>
           <Modal.Content>
             <Form onSubmit={this.handleSubmit}>
               <Form.Field>
