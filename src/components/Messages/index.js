@@ -12,7 +12,9 @@ class Messages extends Component {
     messages: [],
     messagesLoading: true,
     channel: this.props.currentChannel,
-    user: this.props.currentUser
+    user: this.props.currentUser,
+    progressBar: false,
+    numUniqueUsers: ''
   }
 
   componentDidMount() {
@@ -36,7 +38,15 @@ class Messages extends Component {
         messages: loadedMessages,
         messagesLoading: false
       })
+      this.countUniqueUsers(loadedMessages)
     })
+  }
+
+  // 算出當下對話窗共有幾位用戶
+  countUniqueUsers = messages => {
+    const uniqueUsers = [...new Set(messages.map(it => it.user.name))]
+    const numUniqueUsers = uniqueUsers.length
+    this.setState({ numUniqueUsers })
   }
 
   // render message
@@ -50,14 +60,35 @@ class Messages extends Component {
       />
     ))
 
+  isProgressBarVisible = percent => {
+    if (percent > 0) {
+      this.setState({ progressBar: true })
+      if (percent === 100) {
+        // 100% 後過1秒恢復沒有progressBar的高度
+        setTimeout(() => {
+          this.setState({ progressBar: false })
+        }, 1000)
+      }
+    }
+  }
+
+  displayChannelName = channel => (channel ? `#${channel.name}` : '')
+
   render() {
-    const { messagesRef, messages, channel, user } = this.state
+    // prettier-ignore
+    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers } = this.state
+
     return (
       <React.Fragment>
-        <MessagesHeader />
+        <MessagesHeader
+          channelName={this.displayChannelName(channel)}
+          numUniqueUsers={numUniqueUsers}
+        />
 
         <Segment>
-          <Comment.Group className="messages">
+          <Comment.Group
+            className={progressBar ? 'messages__progress' : 'messages'}
+          >
             {/* 對話窗 Messages */}
             {this.displayMessages(messages)}
           </Comment.Group>
@@ -67,6 +98,7 @@ class Messages extends Component {
           messagesRef={messagesRef}
           currentChannel={channel}
           currentUser={user}
+          isProgressBarVisible={this.isProgressBarVisible}
         />
       </React.Fragment>
     )

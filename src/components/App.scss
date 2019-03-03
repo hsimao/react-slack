@@ -3,19 +3,30 @@ body {
   background-color: #eee !important;
 }
 
-// messages.js
+// Messages / index.js
 .messages {
   // height: 440px;
   height: calc(100vh - 280px);
   overflow-y: scroll;
 }
 
+.messages__progress {
+  // 再減掉進度條高度
+  height: calc(100vh - 280px - 29px);
+  overflow-y: scroll;
+}
+
+// Messages / message.js
 .message__self {
   border-left: 2px solid orange;
   padding-left: 8px;
 }
 
-// messagesForm.js
+.message__image {
+  padding: 1rem;
+}
+
+// Messages / messagesForm.js
 .message__form {
   position: fixed !important;
   margin-left: 320px !important;
@@ -23,4 +34,9 @@ body {
   bottom: 1rem;
   left: 1rem;
   z-index: 200;
+}
+
+// Messages / ProgressBar.js
+.progress__bar {
+  margin: 0.3rem 0 0 0 !important;
 }

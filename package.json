@@ -5,6 +5,7 @@
   "dependencies": {
     "firebase": "^5.8.4",
     "md5": "^2.2.1",
+    "mime-types": "^2.1.22",
     "moment": "^2.24.0",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
@@ -14,7 +15,8 @@
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.8",
     "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^0.85.0"
+    "semantic-ui-react": "^0.85.0",
+    "uuid": "^3.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
