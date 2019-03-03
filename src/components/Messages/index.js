@@ -5,6 +5,7 @@ import firebase from '../../firebase'
 import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
+import { chmod } from 'fs'
 
 class Messages extends Component {
   state = {
@@ -14,7 +15,10 @@ class Messages extends Component {
     channel: this.props.currentChannel,
     user: this.props.currentUser,
     progressBar: false,
-    numUniqueUsers: ''
+    numUniqueUsers: '',
+    searchTerm: '',
+    searchLoading: false,
+    searchResults: []
   }
 
   componentDidMount() {
@@ -40,6 +44,36 @@ class Messages extends Component {
       })
       this.countUniqueUsers(loadedMessages)
     })
+  }
+
+  // 搜尋 input 改變
+  handleSearchChange = event => {
+    this.setState(
+      {
+        searchTerm: event.target.value,
+        searchLoading: true
+      },
+      () => this.handleSearchMessages()
+    )
+  }
+
+  // 搜尋 - 比對訊息內容跟用戶姓名
+  handleSearchMessages = () => {
+    const channelMessage = [...this.state.messages]
+    // 全域比對、不分大小寫
+    const regex = new RegExp(this.state.searchTerm, 'gi')
+    const searchResults = channelMessage.reduce((acc, message) => {
+      if (
+        (message.content && message.content.match(regex)) ||
+        message.user.name.match(regex)
+      ) {
+        acc.push(message)
+      }
+      return acc
+    }, [])
+
+    this.setState({ searchResults })
+    setTimeout(() => this.setState({ searchLoading: false }), 500)
   }
 
   // 算出當下對話窗共有幾位用戶
@@ -76,13 +110,15 @@ class Messages extends Component {
 
   render() {
     // prettier-ignore
-    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers } = this.state
+    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading } = this.state
 
     return (
       <React.Fragment>
         <MessagesHeader
           channelName={this.displayChannelName(channel)}
           numUniqueUsers={numUniqueUsers}
+          handleSearchChange={this.handleSearchChange}
+          searchLoading={searchLoading}
         />
 
         <Segment>
@@ -90,7 +126,9 @@ class Messages extends Component {
             className={progressBar ? 'messages__progress' : 'messages'}
           >
             {/* 對話窗 Messages */}
-            {this.displayMessages(messages)}
+            {searchTerm
+              ? this.displayMessages(searchResults)
+              : this.displayMessages(messages)}
           </Comment.Group>
         </Segment>
 
