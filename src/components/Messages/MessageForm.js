@@ -53,11 +53,11 @@ class MessagesForm extends Component {
    * 資料結構 messages / channel.id / 訊息id
    */
   sendMessage = () => {
-    const { messagesRef } = this.props
+    const { getMessagesRef } = this.props
     const { message, channel } = this.state
     if (message) {
       this.setState({ loading: true })
-      messagesRef
+      getMessagesRef()
         .child(channel.id)
         .push()
         .set(this.createMessage())
@@ -86,11 +86,19 @@ class MessagesForm extends Component {
 
   handleEnter = event => event.key === 'Enter' && this.sendMessage()
 
+  // 照片儲存路徑須依照私人頻道或群組不同
+  getPath = () => {
+    if (this.props.isPrivateChannel) {
+      return `chat/private-${this.state.channel.id}`
+    } else {
+      return `chat/public`
+    }
+  }
   // 上傳照片到 fireStorage, 並獲取預覽網址
   uploadFile = (file, metadata) => {
     const pathToUpload = this.state.channel.id
-    const ref = this.props.messagesRef
-    const filePath = `chat/public/${uuidv4()}.jpg`
+    const ref = this.props.getMessagesRef()
+    const filePath = `${this.getPath()}/${uuidv4()}.jpg`
 
     this.setState(
       {

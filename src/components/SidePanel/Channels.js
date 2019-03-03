@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import firebase from '../../firebase'
 import { connect } from 'react-redux'
-import { setCurrentChannel } from '../../actions'
+import { setCurrentChannel, setPrivateChannel } from '../../actions'
 import { Menu, Icon, Modal, Form, Input, Button } from 'semantic-ui-react'
 
 class Channels extends Component {
@@ -70,6 +70,7 @@ class Channels extends Component {
   changeChannel = channel => {
     this.setActiveChannel(channel)
     this.props.setCurrentChannel(channel)
+    this.props.setPrivateChannel(false)
   }
 
   // 當前顯示對話窗
@@ -180,5 +181,5 @@ class Channels extends Component {
 
 export default connect(
   null,
-  { setCurrentChannel }
+  { setCurrentChannel, setPrivateChannel }
 )(Channels)
