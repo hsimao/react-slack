@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Comment, Image } from 'semantic-ui-react'
 
 import moment from 'moment'
