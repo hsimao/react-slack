@@ -14,7 +14,9 @@ class Messages extends Component {
     messages: [],
     messagesLoading: true,
     channel: this.props.currentChannel,
+    isChannelStarred: false,
     user: this.props.currentUser,
+    userRef: firebase.database().ref('users'),
     progressBar: false,
     numUniqueUsers: '',
     searchTerm: '',
@@ -27,6 +29,7 @@ class Messages extends Component {
     // 如果有對話窗、用戶資料，則監聽該對話窗內的訊息資料
     if (channel && user) {
       this.addListeners(channel.id)
+      this.addUserStarsListener(channel.id, user.uid)
     }
   }
 
@@ -48,10 +51,59 @@ class Messages extends Component {
     })
   }
 
+  // 監聽我的最愛狀態
+  addUserStarsListener = (channelId, userId) => {
+    this.state.userRef
+      .child(userId)
+      .child('starred')
+      .once('value')
+      .then(data => {
+        if (data.val() !== null) {
+          const channelIds = Object.keys(data.val())
+          const prevStarred = channelIds.includes(channelId)
+          this.setState({ isChannelStarred: prevStarred })
+        }
+      })
+  }
+
   // privateChannel 判斷回傳不同 database 的儲存路徑
   getMessagesRef = () => {
     const { messagesRef, privateMessagesRef, privateChannel } = this.state
     return privateChannel ? privateMessagesRef : messagesRef
+  }
+
+  // 我的最愛切換
+  handleStar = () => {
+    this.setState(
+      prevState => ({
+        isChannelStarred: !prevState.isChannelStarred
+      }),
+      () => this.starChannel()
+    )
+  }
+
+  // 將我的最愛頻道儲存到 firebase users/userId/starred 底下
+  starChannel = () => {
+    const starredRef = this.state.userRef.child(
+      `${this.state.user.uid}/starred`
+    )
+    if (this.state.isChannelStarred) {
+      starredRef.update({
+        [this.state.channel.id]: {
+          name: this.state.channel.name,
+          details: this.state.channel.details,
+          createdBy: this.state.channel.createdBy
+        }
+      })
+      console.log('star')
+    } else {
+      starredRef.child(this.state.channel.id).remove(err => {
+        if (err !== null) {
+          console.error(err)
+        }
+      })
+      console.log('unstar')
+    }
   }
 
   // 搜尋 input 改變
@@ -122,7 +174,7 @@ class Messages extends Component {
 
   render() {
     // prettier-ignore
-    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel } = this.state
+    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred } = this.state
 
     return (
       <React.Fragment>
@@ -132,6 +184,8 @@ class Messages extends Component {
           handleSearchChange={this.handleSearchChange}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          isChannelStarred={isChannelStarred}
+          handleStar={this.handleStar}
         />
 
         <Segment>
