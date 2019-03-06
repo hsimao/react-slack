@@ -8,11 +8,16 @@ import SidePanel from './SidePanel'
 import Messages from './Messages'
 import MetaPanel from './MetaPanel'
 
-const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts }) => (
-  <Grid columns="equal" className="app" style={{ background: '#eee' }}>
-    <ColorPanel />
-    <SidePanel key={currentUser && currentUser.uid} currentUser={currentUser} />
-    <Grid.Column style={{ marginLeft: 320 }}>
+// prettier-ignore
+const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts, primaryColor, secondaryColor }) => (
+  <Grid columns="equal" className="app" style={{ background: secondaryColor }}>
+    <ColorPanel
+      key={currentUser && currentUser.name}
+      currentUser={currentUser}
+      primaryColor={primaryColor}
+    />
+    <SidePanel key={currentUser && currentUser.uid} currentUser={currentUser} primaryColor={primaryColor} />
+    <Grid.Column style={{ marginLeft: 320, minHeight: '100vh' }}>
       <Messages
         key={currentChannel && currentChannel.id}
         currentChannel={currentChannel}
@@ -24,7 +29,7 @@ const App = ({ currentUser, currentChannel, isPrivateChannel, userPosts }) => (
       <MetaPanel
         userPosts={userPosts}
         currentChannel={currentChannel}
-        key={currentChannel && currentChannel.id}
+        key={currentChannel && currentChannel.name}
         isPrivateChannel={isPrivateChannel}
       />
     </Grid.Column>
@@ -36,7 +41,9 @@ const mapStateToProps = state => ({
   currentUser: state.user.currentUser,
   currentChannel: state.channel.currentChannel,
   isPrivateChannel: state.channel.isPrivateChannel,
-  userPosts: state.channel.userPosts
+  userPosts: state.channel.userPosts,
+  primaryColor: state.colors.primaryColor,
+  secondaryColor: state.colors.secondaryColor
 })
 
 export default connect(mapStateToProps)(App)

@@ -54,11 +54,11 @@ class FileModal extends Component {
           />
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={this.sendFile} color="green" inverted>
+          <Button onClick={this.sendFile} color="teal">
             <Icon name="checkmark" />
             上傳
           </Button>
-          <Button color="red" inverted onClick={closeModal}>
+          <Button color="red" onClick={closeModal}>
             <Icon name="remove" />
             取消
           </Button>

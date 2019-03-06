@@ -45,3 +45,32 @@ body {
 .progress__bar {
   margin: 0.3rem 0 0 0 !important;
 }
+
+// ColorPanel / index.js
+.colorPicker__label {
+  display: inline-block;
+  padding: 5px 20px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 8px 0 rgba(black, 0.125);
+}
+
+.color__container {
+  position: relative;
+  overflow: hidden;
+  width: 35px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.color__square {
+  width: 35px;
+  height: 35px;
+}
+
+.color__overlay {
+  width: 85px;
+  height: 35px;
+  transform: rotate(225deg);
+}

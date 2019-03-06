@@ -248,11 +248,11 @@ class Channels extends Component {
           </Modal.Content>
 
           <Modal.Actions>
-            <Button color="teal" inverted onClick={this.handleSubmit}>
+            <Button color="teal" onClick={this.handleSubmit}>
               <Icon name="checkmark" />
               新增
             </Button>
-            <Button color="red" inverted onClick={this.closeModal}>
+            <Button color="red" onClick={this.closeModal}>
               <Icon name="remove" />
               取消
             </Button>
