@@ -9,6 +9,7 @@ import ProgressBar from './ProgressBar'
 class MessagesForm extends Component {
   state = {
     storageRef: firebase.storage().ref(),
+    typingRef: firebase.database().ref('typing'),
     uploadTask: null,
     uploadState: '',
     percentUploaded: 0,
@@ -25,6 +26,23 @@ class MessagesForm extends Component {
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value })
+  }
+
+  // 鍵盤按下時, 將頻道、用戶資料儲存到 typing 資料庫
+  handleKeyDown = () => {
+    const { message, typingRef, channel, user } = this.state
+    if (message) {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .set(user.displayName)
+    } else {
+      // 沒有訊息，清空
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .remove()
+    }
   }
 
   createMessage = (fileUrl = null) => {
@@ -54,7 +72,7 @@ class MessagesForm extends Component {
    */
   sendMessage = () => {
     const { getMessagesRef } = this.props
-    const { message, channel } = this.state
+    const { message, channel, typingRef, user } = this.state
     if (message) {
       this.setState({ loading: true })
       getMessagesRef()
@@ -64,6 +82,11 @@ class MessagesForm extends Component {
         .then(() => {
           this.setState({ loading: false, message: '', errors: [] })
           console.log('儲存成功')
+          // 清除資料庫記錄當下打字狀態
+          typingRef
+            .child(channel.id)
+            .child(user.uid)
+            .remove()
         })
         .catch(err => {
           console.error(err)
@@ -175,6 +198,7 @@ class MessagesForm extends Component {
           name="message"
           value={message}
           onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
           onKeyPress={this.handleEnter}
           style={{ marginBottom: '0.7rem' }}
           label={<Button icon={'add'} />}

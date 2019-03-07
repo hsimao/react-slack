@@ -8,6 +8,7 @@ import { Menu, Icon, Modal, Form, Input, Button, Label } from 'semantic-ui-react
 class Channels extends Component {
   state = {
     user: this.props.currentUser,
+    typingRef: firebase.database().ref('typing'),
     channelsRef: firebase.database().ref('channels'),
     messagesRef: firebase.database().ref('messages'),
     notifications: [],
@@ -139,6 +140,10 @@ class Channels extends Component {
   // 切換對話框
   changeChannel = channel => {
     this.setActiveChannel(channel)
+    this.state.typingRef
+      .child(this.state.channel.id)
+      .child(this.state.user.uid)
+      .remove()
     this.clearNotifications()
     this.props.setCurrentChannel(channel)
     this.props.setPrivateChannel(false)

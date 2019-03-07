@@ -8,6 +8,7 @@ import firebase from '../../firebase'
 import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
+import Typing from './Typing'
 
 class Messages extends Component {
   state = {
@@ -20,11 +21,14 @@ class Messages extends Component {
     isChannelStarred: false,
     user: this.props.currentUser,
     userRef: firebase.database().ref('users'),
+    typingRef: firebase.database().ref('typing'),
     progressBar: false,
     numUniqueUsers: '',
     searchTerm: '',
     searchLoading: false,
-    searchResults: []
+    searchResults: [],
+    typingUsers: [],
+    connectedRef: firebase.database().ref('.info/connected')
   }
 
   componentDidMount() {
@@ -38,6 +42,44 @@ class Messages extends Component {
 
   addListeners = channelId => {
     this.addMessageListener(channelId)
+    this.addTypingListener(channelId)
+  }
+
+  // 監聽用戶打字狀態
+  addTypingListener = channelId => {
+    let typingUsers = []
+    this.state.typingRef.child(channelId).on('child_added', snap => {
+      if (snap.key !== this.state.user.uid) {
+        typingUsers = typingUsers.concat({
+          id: snap.key,
+          name: snap.val()
+        })
+        this.setState({ typingUsers })
+      }
+    })
+
+    // 監聽刪除
+    this.state.typingRef.child(channelId).on('child_removed', snap => {
+      const index = typingUsers.findIndex(user => user.id === snap.key)
+      if (index !== -1) {
+        typingUsers = typingUsers.filter(user => user.id !== snap.key)
+        this.setState({ typingUsers })
+      }
+    })
+
+    this.state.connectedRef.on('value', snap => {
+      if (snap.val() === true) {
+        this.state.typingRef
+          .child(channelId)
+          .child(this.state.user.uid)
+          .onDisconnect()
+          .remove(err => {
+            if (err !== null) {
+              console.error(err)
+            }
+          })
+      }
+    })
   }
 
   addMessageListener = channelId => {
@@ -192,9 +234,26 @@ class Messages extends Component {
     return channel ? `${tag}${channel.name}` : ''
   }
 
+  // 顯示所有打字中的用戶
+  displayTypingUsers = users =>
+    users.length > 0 &&
+    users.map(user => (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: '0.2em'
+        }}
+        key={user.id}
+      >
+        <span className="user__typing">{user.name} 正在輸入</span>
+        <Typing />
+      </div>
+    ))
+
   render() {
     // prettier-ignore
-    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred } = this.state
+    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers} = this.state
 
     return (
       <React.Fragment>
@@ -216,6 +275,7 @@ class Messages extends Component {
             {searchTerm
               ? this.displayMessages(searchResults)
               : this.displayMessages(messages)}
+            {this.displayTypingUsers(typingUsers)}
           </Comment.Group>
         </Segment>
 

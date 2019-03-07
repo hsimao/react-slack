@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { setColors } from '../../actions'
 
 // prettier-ignore
-import { Sidebar, Menu, Divider, Button, Modal, Icon, Label, Segment} from 'semantic-ui-react'
+import { Sidebar, Menu, Divider, Button, Modal, Icon, Segment} from 'semantic-ui-react'
 
 import { CirclePicker } from 'react-color'
 

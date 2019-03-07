@@ -11,13 +11,13 @@ body {
 // Messages / index.js
 .messages {
   // height: 440px;
-  height: calc(100vh - 280px);
+  height: calc(100vh - 315px);
   overflow-y: scroll;
 }
 
 .messages__progress {
   // 再減掉進度條高度
-  height: calc(100vh - 280px - 29px);
+  height: calc(100vh - 315px - 29px);
   overflow-y: scroll;
 }
 
@@ -34,16 +34,68 @@ body {
 // Messages / messagesForm.js
 .message__form {
   position: fixed !important;
-  margin-left: 320px !important;
   right: 1rem;
   bottom: 1rem;
   left: 1rem;
+  margin-left: 320px !important;
   z-index: 200;
 }
 
 // Messages / ProgressBar.js
 .progress__bar {
   margin: 0.3rem 0 0 0 !important;
+}
+
+// Messages / Typing.js
+.user__typing {
+  font-style: italic;
+  font-weight: bold;
+  margin-right: 3px;
+}
+
+.typing {
+  position: relative;
+  width: 5rem;
+  height: 2rem;
+  padding: 10px;
+  margin-left: 5px;
+  background-color: #e6e6e6;
+  border-radius: 20px;
+}
+
+.typing__dot {
+  width: 8px;
+  height: 8px;
+  float: left;
+  margin: 0 4px;
+  background: #8d8c91;
+  border-radius: 50%;
+  opacity: 0;
+  animation: loadingFade 1s infinite;
+}
+
+.typing__dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loadingFade {
+  0% {
+    opacity: 0%;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 // ColorPanel / index.js
@@ -58,8 +110,8 @@ body {
 
 .color__container {
   position: relative;
-  overflow: hidden;
   width: 35px;
+  overflow: hidden;
   border-radius: 3px;
   cursor: pointer;
 }
