@@ -223,7 +223,7 @@ class Channels extends Component {
         <Menu.Menu className="menu">
           <Menu.Item>
             <span>
-              <Icon name="exchange" /> 群組
+              <Icon name="exchange" /> 聊天室
             </span>{' '}
             ({channels.length}) <Icon name="add" onClick={this.openModal} />
           </Menu.Item>

@@ -116,7 +116,7 @@ class DirectMessages extends Component {
       <Menu.Menu className="menu">
         <Menu.Item>
           <span>
-            <Icon name="mail" /> 好友
+            <Icon name="user" /> 會員
           </span>{' '}
           ({users.length})
         </Menu.Item>

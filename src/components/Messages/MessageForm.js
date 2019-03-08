@@ -151,7 +151,7 @@ class MessagesForm extends Component {
   // 照片儲存路徑須依照私人頻道或群組不同
   getPath = () => {
     if (this.props.isPrivateChannel) {
-      return `chat/private-${this.state.channel.id}`
+      return `chat/private/${this.state.channel.id}`
     } else {
       return `chat/public`
     }
