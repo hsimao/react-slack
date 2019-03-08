@@ -22,15 +22,12 @@ class Starred extends Component {
   // 離開組件時移除 firebase 監聽
   componentWillUnmount() {
     if (this.state.user) {
-      this.removeListeners(this.state.user.uid)
+      this.removeListeners()
     }
   }
 
-  removeListeners = userId => {
-    this.state.usersRef
-      .child(userId)
-      .child('starred')
-      .off()
+  removeListeners = () => {
+    this.state.usersRef.child(`${this.state.user.uid}/starred`).off()
   }
 
   // 監聽我的最愛資料增加

@@ -34,6 +34,9 @@ class Channels extends Component {
   // 移除 firebase 的 on 事件
   removeListeners = () => {
     this.state.channelsRef.off()
+    this.state.channels.forEach(channel => {
+      this.state.messagesRef.child(channel.id).off()
+    })
   }
 
   // 使用 firebase on() 方法監聽 channels 資料是否有更新

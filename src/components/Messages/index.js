@@ -29,16 +29,32 @@ class Messages extends Component {
     searchLoading: false,
     searchResults: [],
     typingUsers: [],
-    connectedRef: firebase.database().ref('.info/connected')
+    connectedRef: firebase.database().ref('.info/connected'),
+    listeners: []
   }
 
   componentDidMount() {
-    const { channel, user } = this.state
-    // 如果有對話窗、用戶資料，則監聽該對話窗內的訊息資料
+    const { channel, user, listeners } = this.state
+    // 如果有對話窗、用戶資料，則監聽該對話窗內的訊息資料, 跟清空之前監聽的 firebase 事件
     if (channel && user) {
+      this.removeListeners(listeners)
       this.addListeners(channel.id)
       this.addUserStarsListener(channel.id, user.uid)
     }
+  }
+
+  componentWillUnmount() {
+    // 清空所有已記錄的 firebase 事件
+    this.removeListeners(this.state.listeners)
+    // 移除 connected
+    this.state.connectedRef.off()
+  }
+
+  // 刪除所有已經紀錄在 listeners 內的 firebase 監聽事件
+  removeListeners = listeners => {
+    listeners.forEach(listener => {
+      listener.ref.child(listener.id).off(listener.event)
+    })
   }
 
   // 組件更新時觸發
@@ -46,6 +62,21 @@ class Messages extends Component {
     // 只要有更新就滾動到最底部
     if (this.messagesEnd) {
       this.scrollToBottom()
+    }
+  }
+
+  // 監聽參數儲存封裝，以便後續移除監聽用
+  addToListeners = (id, ref, event) => {
+    // 檢查是否已經儲存
+    const index = this.state.listeners.findIndex(listener => {
+      return (
+        listener.id === id && listener.ref === ref && listener.event === event
+      )
+    })
+
+    if (index === -1) {
+      const newListener = { id, ref, event }
+      this.setState({ listeners: this.state.listeners.concat(newListener) })
     }
   }
 
@@ -70,6 +101,7 @@ class Messages extends Component {
         this.setState({ typingUsers })
       }
     })
+    this.addToListeners(channelId, this.state.typingRef, 'child_added')
 
     // 監聽刪除
     this.state.typingRef.child(channelId).on('child_removed', snap => {
@@ -79,6 +111,7 @@ class Messages extends Component {
         this.setState({ typingUsers })
       }
     })
+    this.addToListeners(channelId, this.state.typingRef, 'child_removed')
 
     this.state.connectedRef.on('value', snap => {
       if (snap.val() === true) {
@@ -108,6 +141,8 @@ class Messages extends Component {
       this.countUniqueUsers(loadedMessages)
       this.countUserPosts(loadedMessages)
     })
+
+    this.addToListeners(channelId, ref, 'child_added')
   }
 
   // 監聽我的最愛狀態

@@ -25,6 +25,13 @@ class MessagesForm extends Component {
     emojiPicker: false
   }
 
+  componentWillUnmount() {
+    if (this.state.uploadTask !== null) {
+      this.state.uploadTask.cancel()
+      this.setState({ uploadTask: null })
+    }
+  }
+
   openModal = () => this.setState({ modal: true })
   closeModal = () => this.setState({ modal: false })
 
@@ -114,7 +121,6 @@ class MessagesForm extends Component {
         .set(this.createMessage())
         .then(() => {
           this.setState({ loading: false, message: '', errors: [] })
-          console.log('儲存成功')
           // 清除資料庫記錄當下打字狀態
           typingRef
             .child(channel.id)
