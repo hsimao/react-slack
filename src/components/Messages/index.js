@@ -9,6 +9,7 @@ import MessagesHeader from './MessagesHeader'
 import MessageForm from './MessageForm'
 import Message from './Message'
 import Typing from './Typing'
+import Skeleton from './Skeleton'
 
 class Messages extends Component {
   state = {
@@ -263,9 +264,19 @@ class Messages extends Component {
       </div>
     ))
 
+  // 產生10條假訊息畫面
+  displayMessageSkeleton = loading =>
+    loading ? (
+      <React.Fragment>
+        {[...Array(10)].map((_, i) => (
+          <Skeleton key={i} />
+        ))}
+      </React.Fragment>
+    ) : null
+
   render() {
     // prettier-ignore
-    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers} = this.state
+    const { messagesRef, messages, channel, user, progressBar, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers, messagesLoading} = this.state
 
     return (
       <React.Fragment>
@@ -283,6 +294,9 @@ class Messages extends Component {
           <Comment.Group
             className={progressBar ? 'messages__progress' : 'messages'}
           >
+            {/* loading時的假畫面 */}
+            {this.displayMessageSkeleton(messagesLoading)}
+
             {/* 對話窗 Messages */}
             {searchTerm
               ? this.displayMessages(searchResults)
