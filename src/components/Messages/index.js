@@ -40,6 +40,18 @@ class Messages extends Component {
     }
   }
 
+  // 組件更新時觸發
+  componentDidUpdate(prevProps, prevState) {
+    // 只要有更新就滾動到最底部
+    if (this.messagesEnd) {
+      this.scrollToBottom()
+    }
+  }
+
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' })
+  }
+
   addListeners = channelId => {
     this.addMessageListener(channelId)
     this.addTypingListener(channelId)
@@ -276,6 +288,7 @@ class Messages extends Component {
               ? this.displayMessages(searchResults)
               : this.displayMessages(messages)}
             {this.displayTypingUsers(typingUsers)}
+            <div ref={node => (this.messagesEnd = node)} />
           </Comment.Group>
         </Segment>
 
